@@ -11,8 +11,8 @@ Companion to the live-camera app
 ## How it works
 
 1. **Restyle** — the uploaded video is sent to
-   [Kling O1 video-to-video](https://fal.ai/models/fal-ai/kling-video/o1/video-to-video/edit)
-   on fal.ai with your chosen style (3D animated movie, anime, claymation,
+   [Gemini Omni Flash video editing](https://ai.google.dev/gemini-api/docs/omni)
+   with your chosen style (3D animated movie, anime, claymation,
    watercolor, or a custom prompt). This is a true video model: the whole
    clip is regenerated, so the animated version moves exactly like you.
 2. **Track** — MediaPipe Hand Landmarker finds both hands per frame, and the
@@ -27,9 +27,9 @@ Companion to the live-camera app
 
 ## Bring your own key
 
-The AI step uses your own [fal.ai key](https://fal.ai/dashboard/keys),
+The AI step uses your own [Gemini API key](https://aistudio.google.com/apikey),
 entered in the app. It stays in your browser (localStorage only if you check
-"remember") and is sent only to fal.ai. Generation is billed by fal per
+"remember") and is sent only to Google's API. Generation is billed per
 video. No key? The **placeholder style** button runs the full
 track-composite-export pipeline with a hue-shifted stand-in so you can try
 everything for free.
@@ -54,7 +54,7 @@ frame-accurate H.264 output:
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 
-export FAL_KEY=...
+export GEMINI_API_KEY=...
 .venv/bin/python stylize.py input.mov -o stylized.mp4      # AI restyle
 .venv/bin/python composite.py input.mov stylized.mp4 -o final.mp4
 ```

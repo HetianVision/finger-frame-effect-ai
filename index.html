@@ -99,16 +99,17 @@
   </div>
 
   <div id="panel">
-    <h3>1 · fal.ai API key <span style="opacity:.5;font-weight:400">(for the AI restyle)</span></h3>
+    <h3>1 · Gemini API key <span style="opacity:.5;font-weight:400">(for the AI restyle)</span></h3>
     <p>
-      The video is restyled with
-      <a href="https://fal.ai/models/fal-ai/kling-video/o1/video-to-video/edit" target="_blank" rel="noopener">Kling O1 video-to-video</a>
-      using your own <a href="https://fal.ai/dashboard/keys" target="_blank" rel="noopener">fal.ai key</a>.
-      The key stays in your browser and is sent only to fal.ai. No key? You can
-      still try everything with the built-in placeholder style.
+      The video is restyled with <strong>Gemini Omni Flash</strong>
+      (<a href="https://ai.google.dev/gemini-api/docs/omni" target="_blank" rel="noopener">video-to-video editing</a>)
+      using your own key from
+      <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a>.
+      The key stays in your browser and is sent only to Google's API. No key?
+      You can still try everything with the built-in placeholder style.
     </p>
-    <input id="fal-key" type="password" placeholder="key_id:key_secret" autocomplete="off" />
-    <label class="remember"><input type="checkbox" id="fal-remember" /> Remember on this device</label>
+    <input id="gem-key" type="password" placeholder="AIza…" autocomplete="off" />
+    <label class="remember"><input type="checkbox" id="gem-remember" /> Remember on this device</label>
     <h3 style="margin-top:12px">Style</h3>
     <select id="style-select">
       <option value="movie3d">3D animated movie</option>
