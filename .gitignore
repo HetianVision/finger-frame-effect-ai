@@ -1,0 +1,15 @@
+# Media (inputs/outputs stay local — don't publish personal footage)
+*.mov
+*.mp4
+*.task
+
+# Python
+.venv/
+__pycache__/
+
+# Tooling
+.claude/
+.DS_Store
+*.log
+*.png
+*.webm
