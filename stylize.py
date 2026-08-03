@@ -7,7 +7,7 @@ composite.py can use the finger frame as a window over it.
 
 Usage:
     export GEMINI_API_KEY=...   # https://aistudio.google.com/apikey
-    python stylize.py finger-effect-raw.mov -o stylized.mp4
+    python stylize.py finger-effect-raw.mp4 -o stylized.mp4
 
 Docs: https://ai.google.dev/gemini-api/docs/omni
 """
@@ -39,7 +39,7 @@ DEFAULT_PROMPT = (
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("video", nargs="?", default="finger-effect-raw.mov")
+    ap.add_argument("video", nargs="?", default="finger-effect-raw.mp4")
     ap.add_argument("-o", "--output", default="stylized.mp4")
     ap.add_argument("-p", "--prompt", default=DEFAULT_PROMPT)
     args = ap.parse_args()

@@ -12,7 +12,7 @@ with hysteresis, teleport rejection, velocity-adaptive smoothing, dropout
 hold, and presence fade.
 
 Usage:
-    python composite.py finger-effect-raw.mov stylized.mp4 -o final.mp4
+    python composite.py finger-effect-raw.mp4 stylized.mp4 -o final.mp4
 """
 
 import argparse
@@ -190,7 +190,7 @@ def ensure_model():
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("original", nargs="?", default="finger-effect-raw.mov")
+    ap.add_argument("original", nargs="?", default="finger-effect-raw.mp4")
     ap.add_argument("stylized", nargs="?", default="stylized.mp4")
     ap.add_argument("-o", "--output", default="final.mp4")
     args = ap.parse_args()

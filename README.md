@@ -22,6 +22,10 @@ style ([full-quality mp4](examples/final.mp4)).*
    with your chosen style (3D animated movie, anime, claymation,
    watercolor, or a custom prompt). This is a true video model: the whole
    clip is regenerated, so the animated version moves exactly like you.
+   Every prompt gets a strict-alignment suffix appended — same framing, no
+   zoom/crop/recentering, facial features at the same screen coordinates,
+   expression preserved frame by frame (mouth openness, blinks, gaze) — so
+   the result lines up behind the finger-frame window.
 2. **Track** — MediaPipe Hand Landmarker finds both hands per frame, and the
    finger-frame quad is tracked with the same audited pipeline as the live
    app (anatomical corner ordering — crossing your fingers renders the
@@ -38,7 +42,9 @@ style ([full-quality mp4](examples/final.mp4)).*
 The AI step uses your own [Gemini API key](https://aistudio.google.com/apikey),
 entered in the app. It stays in your browser (localStorage only if you check
 "remember") and is sent only to Google's API. Generation is billed per
-video. No key? The **placeholder style** button runs the full
+video and takes a few minutes. Keep clips under ~15MB (a few seconds of
+720p — any common format: mp4, mov, webm); larger files exceed the inline
+upload limit. No key? The **placeholder style** button runs the full
 track-composite-export pipeline with a hue-shifted stand-in so you can try
 everything for free.
 
@@ -63,14 +69,15 @@ python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 
 export GEMINI_API_KEY=...
-.venv/bin/python stylize.py input.mov -o stylized.mp4      # AI restyle
-.venv/bin/python composite.py input.mov stylized.mp4 -o final.mp4
+.venv/bin/python stylize.py input.mp4 -o stylized.mp4      # AI restyle
+.venv/bin/python composite.py input.mp4 stylized.mp4 -o final.mp4
 ```
 
-`composite.py` needs `ffmpeg` on PATH and carries over the original audio
-track when present.
+Any input format ffmpeg/OpenCV can read works (mp4, mov, webm, …).
+`composite.py` needs `ffmpeg` on PATH, outputs H.264 MP4, and carries over
+the original audio track when present.
 
 ## Notes
 
-- Media files are gitignored on purpose — personal footage stays local;
-  only the pipeline code is published.
+- Input/output media are gitignored — personal footage stays local. The
+  only committed media is the sample under `examples/`.
