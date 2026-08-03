@@ -26,8 +26,12 @@ DEFAULT_PROMPT = (
     "no zoom, no crop, no recentering, and no change to the field of view. "
     "The person's face and body must stay at exactly the same position and "
     "size in the frame as the source: eyes, nose, and mouth must remain at "
-    "the same screen coordinates in every frame. Change only the visual "
-    "style, nothing about the geometry or composition."
+    "the same screen coordinates in every frame. Match the facial "
+    "expression exactly, frame by frame: if the mouth is slightly open, "
+    "keep it slightly open to the same degree; mirror every blink, gaze "
+    "direction, eyebrow movement, and mouth movement at the same moments "
+    "as the source. Change only the visual style, nothing about the "
+    "geometry, composition, or performance."
 )
 
 
