@@ -2,6 +2,9 @@
 *.mov
 *.mp4
 *.task
+# …except the checked-in example
+!examples/final.mp4
+!examples/final.gif
 
 # Python
 .venv/

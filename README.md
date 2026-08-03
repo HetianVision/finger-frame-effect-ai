@@ -8,6 +8,11 @@ finger frame acts as a window into the animated version.
 Companion to the live-camera app
 [finger-frame-effect](https://github.com/sophiamyang/finger-frame-effect).
 
+![Example: AI-animated world inside the finger frame](examples/final.gif)
+
+*Real hands, AI world — generated with the default "3D animated movie"
+style ([full-quality mp4](examples/final.mp4)).*
+
 ## How it works
 
 1. **Restyle** — the uploaded video is sent to

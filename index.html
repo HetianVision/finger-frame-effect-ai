@@ -6,140 +6,317 @@
   <title>Finger Frame AI</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body {
-      min-height: 100%;
-      background: #0a0a0c;
-      color: #eee;
+    :root {
+      --bg: #0b0a10;
+      --card: rgba(255, 255, 255, 0.035);
+      --line: rgba(255, 255, 255, 0.09);
+      --text-dim: rgba(255, 255, 255, 0.6);
+      --text-faint: rgba(255, 255, 255, 0.42);
+      --accent-a: #ff6b5e;
+      --accent-b: #ffc24b;
+      --grad: linear-gradient(120deg, var(--accent-a), var(--accent-b));
+    }
+    html, body { min-height: 100%; }
+    body {
+      background:
+        radial-gradient(900px 500px at 12% -8%, rgba(255, 107, 94, 0.10), transparent 60%),
+        radial-gradient(800px 500px at 95% 30%, rgba(255, 194, 75, 0.07), transparent 55%),
+        var(--bg);
+      color: #f2f0ec;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 44px 16px 40px;
     }
-    body { display: flex; flex-direction: column; align-items: center; padding: 24px 16px 48px; }
-    h1 { font-size: 20px; margin-bottom: 4px; }
-    .sub { font-size: 13px; color: rgba(255,255,255,0.55); margin-bottom: 20px; text-align: center; }
 
-    #drop {
+    /* ---- header ---- */
+    header { text-align: center; margin-bottom: 34px; }
+    .mark {
+      position: relative;
+      width: 58px; height: 44px;
+      margin: 0 auto 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .mark i {
+      position: absolute; width: 14px; height: 14px;
+      border: 2.5px solid transparent;
+      border-image: var(--grad) 1;
+    }
+    .mark i:nth-child(1) { top: 0; left: 0; border-right: none; border-bottom: none; }
+    .mark i:nth-child(2) { top: 0; right: 0; border-left: none; border-bottom: none; }
+    .mark i:nth-child(3) { bottom: 0; left: 0; border-right: none; border-top: none; }
+    .mark i:nth-child(4) { bottom: 0; right: 0; border-left: none; border-top: none; }
+    h1 {
+      font-size: 30px;
+      letter-spacing: -0.5px;
+      background: linear-gradient(120deg, #fff 30%, var(--accent-b));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .sub {
+      font-size: 14.5px;
+      color: var(--text-dim);
+      max-width: 480px;
+      line-height: 1.55;
+      margin: 0 auto;
+    }
+    .sub b { color: #fff; font-weight: 600; }
+
+    /* ---- cards & steps ---- */
+    .card {
       width: min(720px, 100%);
-      border: 2px dashed rgba(255,255,255,0.25);
-      border-radius: 16px;
-      padding: 48px 24px;
-      text-align: center;
-      color: rgba(255,255,255,0.7);
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-      margin-bottom: 20px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px 22px;
+      margin-bottom: 16px;
+      backdrop-filter: blur(8px);
     }
-    #drop:hover, #drop.over { border-color: #8ab4ff; background: rgba(138,180,255,0.06); }
-    #drop input { display: none; }
-    #drop .big { font-size: 15px; margin-bottom: 6px; }
-    #drop .small { font-size: 12.5px; color: rgba(255,255,255,0.45); }
-
-    #stage { width: min(960px, 100%); display: none; flex-direction: column; align-items: center; gap: 14px; }
-    canvas { max-width: 100%; border-radius: 12px; background: #000; }
-    video { display: none; }
-
-    #controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-    button {
-      appearance: none;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.06);
-      color: #eee;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 9px 16px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: background 0.15s;
+    .step {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14.5px; font-weight: 650;
+      margin-bottom: 10px;
     }
-    button:hover:not(:disabled) { background: rgba(255,255,255,0.12); }
-    button:disabled { opacity: 0.4; cursor: default; }
-    button.primary { background: #fff; color: #111; border-color: #fff; }
-    button.primary:hover:not(:disabled) { background: #e8e8e8; }
-
-    #status { font-size: 13px; color: rgba(255,255,255,0.65); min-height: 18px; text-align: center; max-width: 720px; }
-
-    #panel {
-      width: min(720px, 100%);
-      background: rgba(24,24,30,0.9);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 20px;
+    .step .n {
+      width: 22px; height: 22px; flex: none;
+      border-radius: 50%;
+      background: var(--grad);
+      color: #1a120b;
+      font-size: 12px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
     }
-    #panel h3 { font-size: 14px; margin-bottom: 8px; }
-    #panel p { font-size: 12.5px; color: rgba(255,255,255,0.65); line-height: 1.5; margin-bottom: 10px; }
-    #panel a { color: #8ab4ff; }
-    #panel input[type="password"], #panel select, #panel textarea {
+    .step .opt { color: var(--text-faint); font-weight: 400; font-size: 12.5px; }
+    .card p { font-size: 12.5px; color: var(--text-dim); line-height: 1.55; margin-bottom: 12px; }
+    .card a { color: var(--accent-b); text-decoration: none; }
+    .card a:hover { text-decoration: underline; }
+
+    input[type="password"], select, textarea {
       width: 100%;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: rgba(0,0,0,0.35);
-      color: #eee;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.35);
+      color: #f2f0ec;
       font-size: 13px;
       margin-bottom: 10px;
       font-family: ui-monospace, monospace;
       resize: vertical;
+      transition: border-color 0.15s;
     }
-    #panel select { font-family: inherit; }
-    #panel select option { background: #1a1a20; }
-    #panel textarea { font-family: inherit; }
-    #panel .remember {
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: rgba(255, 194, 75, 0.55);
+    }
+    select, textarea { font-family: inherit; }
+    select option { background: #17151d; }
+    .remember {
       display: flex; align-items: center; gap: 7px;
-      font-size: 12.5px; color: rgba(255,255,255,0.75);
-      margin-bottom: 4px; cursor: pointer;
+      font-size: 12.5px; color: var(--text-dim);
+      cursor: pointer; margin-bottom: 2px;
     }
+    .remember input { accent-color: var(--accent-a); }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 560px) { .row2 { grid-template-columns: 1fr; } }
+    .field-label {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 6px;
+    }
+
+    /* ---- drop zone ---- */
+    #drop {
+      position: relative;
+      width: min(720px, 100%);
+      border: 1.5px dashed rgba(255, 255, 255, 0.22);
+      border-radius: 18px;
+      padding: 44px 24px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 16px;
+      transition: border-color 0.15s, background 0.15s, padding 0.25s;
+    }
+    #drop:hover, #drop.over {
+      border-color: rgba(255, 194, 75, 0.6);
+      background: rgba(255, 194, 75, 0.045);
+    }
+    #drop.compact { padding: 18px 24px; }
+    #drop.compact .film, #drop.compact .small { display: none; }
+    #drop input { display: none; }
+    #drop .corner {
+      position: absolute; width: 18px; height: 18px;
+      border: 2.5px solid transparent;
+      border-image: var(--grad) 1;
+      transition: all 0.2s;
+    }
+    #drop .corner.tl { top: 10px; left: 10px; border-right: none; border-bottom: none; }
+    #drop .corner.tr { top: 10px; right: 10px; border-left: none; border-bottom: none; }
+    #drop .corner.bl { bottom: 10px; left: 10px; border-right: none; border-top: none; }
+    #drop .corner.br { bottom: 10px; right: 10px; border-left: none; border-top: none; }
+    #drop:hover .corner { width: 24px; height: 24px; }
+    #drop .film { font-size: 26px; margin-bottom: 10px; }
+    #drop .big { font-size: 15px; font-weight: 650; margin-bottom: 6px; }
+    #drop .small { font-size: 12.5px; color: var(--text-faint); }
+
+    /* ---- stage ---- */
+    #stage {
+      width: min(960px, 100%);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+    .canvas-wrap {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 10px;
+      box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.8);
+    }
+    canvas { display: block; width: 100%; border-radius: 10px; background: #000; }
+    video { display: none; }
+
+    #controls { display: flex; flex-wrap: wrap; gap: 9px; justify-content: center; }
+    button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.05);
+      color: #f2f0ec;
+      font-size: 13.5px;
+      font-weight: 650;
+      padding: 10px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+    }
+    button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); transform: translateY(-1px); }
+    button:active:not(:disabled) { transform: translateY(0); }
+    button:disabled { opacity: 0.35; cursor: default; }
+    button.primary {
+      background: var(--grad);
+      border: none;
+      color: #1a120b;
+      box-shadow: 0 6px 24px -8px rgba(255, 140, 80, 0.55);
+    }
+    button.primary:hover:not(:disabled) {
+      box-shadow: 0 10px 30px -8px rgba(255, 140, 80, 0.75);
+      background: var(--grad);
+    }
+
+    /* ---- status ---- */
+    #status {
+      display: none;
+      align-items: center;
+      gap: 9px;
+      font-size: 13px;
+      color: var(--text-dim);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 16px;
+      max-width: min(720px, 100%);
+      text-align: left;
+    }
+    #status:not(:empty) { display: inline-flex; }
+    #status.working::before {
+      content: "";
+      flex: none;
+      width: 13px; height: 13px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 194, 75, 0.25);
+      border-top-color: var(--accent-b);
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    footer {
+      margin-top: 34px;
+      font-size: 12px;
+      color: var(--text-faint);
+      text-align: center;
+      line-height: 1.8;
+    }
+    footer a { color: var(--text-dim); }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
-  <h1>Finger Frame AI 🎬✨</h1>
-  <div class="sub">
-    Upload a video of the finger-frame gesture — get it back with an
-    AI-generated world inside the frame.
-  </div>
+  <header>
+    <div class="mark"><i></i><i></i><i></i><i></i>✨</div>
+    <h1>Finger Frame AI</h1>
+    <div class="sub">
+      Upload a clip of the <b>finger-frame gesture</b> — get it back with an
+      AI-animated version of you living inside the frame, tracked to your
+      fingers.
+    </div>
+  </header>
 
-  <div id="panel">
-    <h3>1 · Gemini API key <span style="opacity:.5;font-weight:400">(for the AI restyle)</span></h3>
+  <div class="card" id="panel">
+    <div class="step"><span class="n">1</span> Key &amp; style
+      <span class="opt">— key needed only for the AI restyle</span></div>
     <p>
-      The video is restyled with <strong>Gemini Omni Flash</strong>
+      Restyling runs on <strong>Gemini Omni Flash</strong>
       (<a href="https://ai.google.dev/gemini-api/docs/omni" target="_blank" rel="noopener">video-to-video editing</a>)
-      using your own key from
+      with your own key from
       <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a>.
-      The key stays in your browser and is sent only to Google's API. No key?
-      You can still try everything with the built-in placeholder style.
+      It stays in your browser and is sent only to Google's API. No key? Try
+      everything with the placeholder style first.
     </p>
-    <input id="gem-key" type="password" placeholder="AIza…" autocomplete="off" />
-    <label class="remember"><input type="checkbox" id="gem-remember" /> Remember on this device</label>
-    <h3 style="margin-top:12px">Style</h3>
-    <select id="style-select">
-      <option value="movie3d">3D animated movie</option>
-      <option value="anime">Anime</option>
-      <option value="clay">Claymation</option>
-      <option value="watercolor">Watercolor</option>
-      <option value="custom">Custom prompt…</option>
-    </select>
-    <textarea id="style-custom" rows="2" class="hidden"
-      placeholder="Describe the transformation, e.g. 'Turn the scene into a LEGO world'"></textarea>
+    <div class="row2">
+      <div>
+        <div class="field-label">Gemini API key</div>
+        <input id="gem-key" type="password" placeholder="AIza…" autocomplete="off" />
+        <label class="remember"><input type="checkbox" id="gem-remember" /> Remember on this device</label>
+      </div>
+      <div>
+        <div class="field-label">Style</div>
+        <select id="style-select">
+          <option value="movie3d">3D animated movie</option>
+          <option value="anime">Anime</option>
+          <option value="clay">Claymation</option>
+          <option value="watercolor">Watercolor</option>
+          <option value="custom">Custom prompt…</option>
+        </select>
+        <textarea id="style-custom" rows="2" class="hidden"
+          placeholder="e.g. 'Turn the scene into a LEGO world'"></textarea>
+      </div>
+    </div>
   </div>
 
   <label id="drop">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
     <input id="file" type="file" accept="video/*" />
-    <div class="big">2 · Drop a video here, or click to choose</div>
-    <div class="small">A few seconds of footage with the two-hand finger-frame gesture works best.</div>
+    <div class="film">🎬</div>
+    <div class="big"><span style="opacity:.55">2 ·</span> Drop a video here, or click to choose</div>
+    <div class="small">A few seconds of 720p footage with the two-hand gesture works best (&lt;15MB).</div>
   </label>
 
   <div id="stage">
     <video id="orig" playsinline muted></video>
     <video id="sty" playsinline muted crossorigin="anonymous"></video>
-    <canvas id="canvas"></canvas>
+    <div class="canvas-wrap"><canvas id="canvas"></canvas></div>
     <div id="controls">
       <button id="btn-generate" class="primary">✨ Generate AI video</button>
-      <button id="btn-placeholder">Test with placeholder style</button>
+      <button id="btn-placeholder">Try placeholder style</button>
       <button id="btn-play" disabled>▶ Preview</button>
-      <button id="btn-export" disabled>⬇ Export video</button>
+      <button id="btn-export" disabled>⬇ Export</button>
     </div>
     <div id="status"></div>
   </div>
+
+  <footer>
+    Gemini Omni Flash · MediaPipe hand tracking · runs entirely in your browser<br />
+    <a href="https://sophiamyang.github.io/finger-frame-effect/" target="_blank" rel="noopener">live-camera sibling app</a>
+    ·
+    <a href="https://github.com/sophiamyang/finger-frame-effect-ai" target="_blank" rel="noopener">source on GitHub</a>
+  </footer>
 
   <script type="module" src="app.js"></script>
 </body>

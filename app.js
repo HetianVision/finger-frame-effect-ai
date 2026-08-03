@@ -56,6 +56,8 @@ let exporting = false;
 
 function status(msg) {
   statusEl.textContent = msg;
+  // Messages ending in an ellipsis are in-progress — show the spinner.
+  statusEl.classList.toggle("working", /…\s*$/.test(msg));
 }
 
 // ---- key + style panel ----
@@ -118,6 +120,7 @@ async function loadVideo(file) {
   canvas.width = orig.videoWidth;
   canvas.height = orig.videoHeight;
   stage.style.display = "flex";
+  drop.classList.add("compact");
   drawPoster();
   status(
     `Loaded ${file.name} (${orig.videoWidth}×${orig.videoHeight}, ` +
