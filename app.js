@@ -22,7 +22,13 @@ const STYLES = {
     "Repaint the video as a soft watercolor painting with loose brushwork.",
 };
 const PROMPT_SUFFIX =
-  " Keep the same pose, motion, framing, clothing colors, and background composition.";
+  " This is a strict pixel-aligned edit of the source video: keep the same " +
+  "pose, motion, timing, clothing colors, and background. The camera must " +
+  "not change — no zoom, no crop, no recentering, and no change to the " +
+  "field of view. The person's face and body must stay at exactly the same " +
+  "position and size in the frame as the source: eyes, nose, and mouth must " +
+  "remain at the same screen coordinates in every frame. Change only the " +
+  "visual style, nothing about the geometry or composition.";
 
 const WRIST = 0, THUMB_TIP = 4, INDEX_TIP = 8, MIDDLE_MCP = 9;
 

@@ -20,8 +20,14 @@ import time
 MODEL = "gemini-omni-flash-preview"
 DEFAULT_PROMPT = (
     "Transform the person into a 3D animated movie character (stylized CGI "
-    "animation look, expressive big eyes, soft lighting). Keep the same "
-    "pose, motion, framing, clothing colors, and background composition."
+    "animation look, expressive big eyes, soft lighting). This is a strict "
+    "pixel-aligned edit of the source video: keep the same pose, motion, "
+    "timing, clothing colors, and background. The camera must not change — "
+    "no zoom, no crop, no recentering, and no change to the field of view. "
+    "The person's face and body must stay at exactly the same position and "
+    "size in the frame as the source: eyes, nose, and mouth must remain at "
+    "the same screen coordinates in every frame. Change only the visual "
+    "style, nothing about the geometry or composition."
 )
 
 
