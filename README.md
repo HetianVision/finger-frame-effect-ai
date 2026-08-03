@@ -1,5 +1,7 @@
 # Finger Frame AI 🎬✨
 
+**Try it: https://sophiamyang.github.io/finger-frame-effect-ai/**
+
 Upload a video of the two-hand finger-frame gesture — get it back with an
 **AI-generated world inside the frame**. The whole video is restyled by a
 video-to-video model (motion, blinks, and all), then composited so the
