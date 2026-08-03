@@ -528,9 +528,15 @@ btnExport.addEventListener("click", async () => {
   status("Exporting — playing the video through once…");
 
   const stream = canvas.captureStream(30);
-  const mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
-    ? "video/webm;codecs=vp9"
-    : "video/webm";
+  // Prefer MP4 where the browser can record it (Safari, newer Chrome);
+  // fall back to WebM elsewhere.
+  const mime = [
+    "video/mp4;codecs=avc1.42E01E",
+    "video/mp4",
+    "video/webm;codecs=vp9",
+    "video/webm",
+  ].find((m) => MediaRecorder.isTypeSupported(m)) || "video/webm";
+  const isMp4 = mime.startsWith("video/mp4");
   recorder = new MediaRecorder(stream, {
     mimeType: mime,
     videoBitsPerSecond: 10_000_000,
@@ -538,14 +544,17 @@ btnExport.addEventListener("click", async () => {
   const chunks = [];
   recorder.ondataavailable = (e) => e.data.size && chunks.push(e.data);
   recorder.onstop = () => {
-    const blob = new Blob(chunks, { type: "video/webm" });
+    const ext = isMp4 ? "mp4" : "webm";
+    const blob = new Blob(chunks, { type: isMp4 ? "video/mp4" : "video/webm" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "finger-frame-ai.webm";
+    a.download = `finger-frame-ai.${ext}`;
     a.click();
     status(
-      "Exported finger-frame-ai.webm. (Convert to mp4 with: " +
-      "ffmpeg -i finger-frame-ai.webm -c:v libx264 out.mp4)"
+      `Exported finger-frame-ai.${ext}.` +
+      (isMp4
+        ? ""
+        : " (This browser records WebM — convert with: ffmpeg -i finger-frame-ai.webm -c:v libx264 out.mp4)")
     );
     exporting = false;
     btnExport.disabled = false;

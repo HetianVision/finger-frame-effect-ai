@@ -29,7 +29,8 @@ style ([full-quality mp4](examples/final.mp4)).*
    velocity-adaptive smoothing, dropout hold, presence fade).
 3. **Composite** — the AI video is revealed through the tracked quad with
    the dashed marching-ants outline and pulsing corner dots.
-4. **Export** — the result records to a downloadable `.webm`
+4. **Export** — the result records to a downloadable video — MP4 where the
+   browser supports recording it (Safari, newer Chrome), otherwise `.webm`
    (convert with `ffmpeg -i finger-frame-ai.webm -c:v libx264 out.mp4`).
 
 ## Bring your own key
