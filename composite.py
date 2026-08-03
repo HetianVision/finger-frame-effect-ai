@@ -30,6 +30,13 @@ MODEL_URL = (
     "hand_landmarker/float16/1/hand_landmarker.task"
 )
 MODEL_PATH = "hand_landmarker.task"
+FACE_MODEL_URL = (
+    "https://storage.googleapis.com/mediapipe-models/face_landmarker/"
+    "face_landmarker/float16/1/face_landmarker.task"
+)
+FACE_MODEL_PATH = "face_landmarker.task"
+# Outer eye corners in the MediaPipe face mesh.
+EYE_R, EYE_L = 33, 263
 
 WRIST, THUMB_TIP, INDEX_TIP, MIDDLE_MCP = 0, 4, 8, 9
 
@@ -186,6 +193,68 @@ def ensure_model():
     if not os.path.exists(MODEL_PATH):
         print("Downloading hand landmarker model …")
         urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
+    if not os.path.exists(FACE_MODEL_PATH):
+        print("Downloading face landmarker model …")
+        urllib.request.urlretrieve(FACE_MODEL_URL, FACE_MODEL_PATH)
+
+
+class FaceAligner:
+    """Estimate a smoothed similarity transform (scale + translation) that
+    maps the stylized video's face onto the original's, correcting AI models
+    that redraw the person slightly smaller/larger or shifted."""
+
+    def __init__(self, vision_mod, mp_tasks_mod, mp_mod, w, h):
+        self.mp = mp_mod
+        self.w, self.h = w, h
+
+        def opts():
+            return vision_mod.FaceLandmarkerOptions(
+                base_options=mp_tasks_mod.BaseOptions(
+                    model_asset_path=FACE_MODEL_PATH
+                ),
+                running_mode=vision_mod.RunningMode.VIDEO,
+                num_faces=1,
+            )
+
+        self.det_orig = vision_mod.FaceLandmarker.create_from_options(opts())
+        self.det_sty = vision_mod.FaceLandmarker.create_from_options(opts())
+        self.s, self.tx, self.ty = 1.0, 0.0, 0.0
+        self.have = False
+
+    def _eyes(self, det, frame_bgr, ts):
+        rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
+        res = det.detect_for_video(
+            self.mp.Image(image_format=self.mp.ImageFormat.SRGB, data=rgb), ts
+        )
+        if not res.face_landmarks:
+            return None
+        lm = res.face_landmarks[0]
+        p = lambda i: (lm[i].x * self.w, lm[i].y * self.h)
+        r, l = p(EYE_R), p(EYE_L)
+        mid = ((r[0] + l[0]) / 2, (r[1] + l[1]) / 2)
+        return mid, dist(r, l)
+
+    def update(self, orig_frame, sty_frame, ts):
+        eo = self._eyes(self.det_orig, orig_frame, ts)
+        es = self._eyes(self.det_sty, sty_frame, ts)
+        if eo and es and es[1] > 1:
+            s = eo[1] / es[1]
+            tx = eo[0][0] - s * es[0][0]
+            ty = eo[0][1] - s * es[0][1]
+            # EMA smoothing so the correction doesn't jitter.
+            a = 0.15 if self.have else 1.0
+            self.s += (s - self.s) * a
+            self.tx += (tx - self.tx) * a
+            self.ty += (ty - self.ty) * a
+            self.have = True
+
+    def apply(self, sty_frame):
+        if not self.have or abs(self.s - 1) + abs(self.tx) + abs(self.ty) < 1e-3:
+            return sty_frame
+        m = np.float32([[self.s, 0, self.tx], [0, self.s, self.ty]])
+        return cv2.warpAffine(
+            sty_frame, m, (self.w, self.h), borderMode=cv2.BORDER_REPLICATE
+        )
 
 
 def main():
@@ -193,6 +262,11 @@ def main():
     ap.add_argument("original", nargs="?", default="finger-effect-raw.mov")
     ap.add_argument("stylized", nargs="?", default="stylized.mp4")
     ap.add_argument("-o", "--output", default="final.mp4")
+    ap.add_argument(
+        "--no-align",
+        action="store_true",
+        help="disable face-based auto-alignment of the stylized video",
+    )
     args = ap.parse_args()
 
     for f in (args.original, args.stylized):
@@ -222,6 +296,7 @@ def main():
             min_tracking_confidence=0.3,
         )
     )
+    aligner = None if args.no_align else FaceAligner(vision, mp_tasks, mp, w, h)
 
     # Pipe frames straight into ffmpeg for a proper H.264 output.
     ff = subprocess.Popen(
@@ -256,12 +331,16 @@ def main():
             sty_frames.append(sf)
         sty_frame = sty_frames[min(j, len(sty_frames) - 1)] if sty_frames else None
 
+        ts = int(i * 1000 / fps)
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         result = landmarker.detect_for_video(
-            mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb),
-            int(i * 1000 / fps),
+            mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb), ts
         )
         quad = tracker.update(result.hand_landmarks or [])
+
+        if aligner is not None and sty_frame is not None:
+            aligner.update(frame, sty_frame, ts)
+            sty_frame = aligner.apply(sty_frame)
 
         if quad is not None and sty_frame is not None:
             tracked += 1

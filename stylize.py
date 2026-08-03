@@ -21,7 +21,9 @@ MODEL = "gemini-omni-flash-preview"
 DEFAULT_PROMPT = (
     "Transform the person into a 3D animated movie character (stylized CGI "
     "animation look, expressive big eyes, soft lighting). Keep the same "
-    "pose, motion, framing, clothing colors, and background composition."
+    "pose, motion, framing, clothing colors, and background composition. "
+    "Do not change the size or position of the face or body — every feature "
+    "must stay exactly where it is in the original."
 )
 
 
