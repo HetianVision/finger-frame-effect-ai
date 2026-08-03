@@ -263,7 +263,6 @@ btnGenerate.addEventListener("click", async () => {
           },
           { type: "text", text: prompt() },
         ],
-        delivery: "uri",
       }),
     });
     console.log("interaction response:", inter);

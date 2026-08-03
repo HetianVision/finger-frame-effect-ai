@@ -55,7 +55,6 @@ def main():
             {"type": "document", "uri": video_file.uri},
             {"type": "text", "text": args.prompt},
         ],
-        delivery="uri",
     )
 
     # Poll if the interaction reports as still running.
