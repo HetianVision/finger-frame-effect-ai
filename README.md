@@ -7,8 +7,13 @@ Upload a video of the two-hand finger-frame gesture — get it back with an
 video-to-video model (motion, blinks, and all), then composited so the
 finger frame acts as a window into the animated version.
 
-Companion to the live-camera app
-[finger-frame-effect](https://github.com/sophiamyang/finger-frame-effect).
+## The finger-frame family
+
+| App | Generation | Latency |
+|---|---|---|
+| [finger-frame-effect](https://sophiamyang.github.io/finger-frame-effect/) ([repo](https://github.com/sophiamyang/finger-frame-effect)) — live camera, local effects | Canvas 2D (Van Gogh, toon, glitch, …) | none |
+| **this app** — recorded video, AI restyle | Gemini Omni Flash (offline video edit) | minutes |
+| [finger-frame-effect-lucy](https://sophiamyang.github.io/finger-frame-effect-lucy/) ([repo](https://github.com/sophiamyang/finger-frame-effect-lucy)) — live camera, live AI | Decart Lucy 2.5 (realtime video-to-video) | ~real time |
 
 ![Example: AI-animated world inside the finger frame](examples/final.gif)
 
