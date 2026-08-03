@@ -215,11 +215,15 @@ async function gemFetch(key, path, init = {}) {
 }
 
 // The Interactions API is in preview; be liberal about where the output
-// video and status live in the response.
+// video and status live in the response. Verified live shape: the video is
+// in steps[].content[] on the step with type "model_output".
 function findOutputVideo(inter) {
   if (inter.output_video) return inter.output_video;
   if (inter.outputVideo) return inter.outputVideo;
   const lists = [inter.outputs, inter.output, inter.content].filter(Array.isArray);
+  for (const step of inter.steps || []) {
+    if (Array.isArray(step.content)) lists.push(step.content);
+  }
   for (const list of lists) {
     const v = list.find(
       (o) => o?.type?.includes?.("video") || o?.video || o?.mime_type?.startsWith?.("video")
