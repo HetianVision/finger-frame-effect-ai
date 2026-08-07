@@ -14,6 +14,7 @@ finger frame acts as a window into the animated version.
 | [finger-frame-effect](https://sophiamyang.github.io/finger-frame-effect/) ([repo](https://github.com/sophiamyang/finger-frame-effect)) — live camera, local effects | Canvas 2D (Van Gogh, toon, glitch, …) | none |
 | **this app** — recorded video, AI restyle | Gemini Omni Flash (offline video edit) | minutes |
 | [finger-frame-effect-lucy](https://sophiamyang.github.io/finger-frame-effect-lucy/) ([repo](https://github.com/sophiamyang/finger-frame-effect-lucy)) — live camera, live AI | Decart Lucy 2.5 (realtime video-to-video) | ~real time |
+| [finger-pet](https://sophiamyang.github.io/finger-pet/) ([repo](https://github.com/sophiamyang/finger-pet)) — hand-tracked virtual pet cat | AI-generated sprites + game logic | none |
 
 ![Example: AI-animated world inside the finger frame](examples/final.gif)
 
